@@ -19,6 +19,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <time.h>
 
 #define WINDOW_WIDTH 400
 #define WINDOW_HEIGHT 400
@@ -68,6 +69,8 @@ int main()
 	int gui_flags = 0;
 
 	struct nk_color background = { 0, 0, 0, 255 };
+
+	srand(time(NULL));
 
 
 	int board[100] = { EMPTY };
