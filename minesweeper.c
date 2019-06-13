@@ -23,6 +23,9 @@
 #define WINDOW_WIDTH 400
 #define WINDOW_HEIGHT 400
 
+enum { BOMB = -1, EMPTY };
+enum { HIDDEN, SHOWN, REVEALED };
+
 
 int handle_events(struct nk_context* ctx);
 void reveal(int* board, int* board2, int i);
@@ -67,8 +70,6 @@ int main()
 	struct nk_color background = { 0, 0, 0, 255 };
 
 
-	enum { BOMB = -1, EMPTY };
-	enum { HIDDEN, SHOWN };
 	int board[100] = { EMPTY };
 	int board2[100] = { HIDDEN };
 	int tmp;
@@ -120,7 +121,7 @@ int main()
 
 				if (board2[i] == HIDDEN) {
 					if (nk_button_color(ctx, hidden)) {
-						board2[i] = SHOWN;
+						reveal(board, board2, i);
 					}
 				} else {
 					if (board[i] != BOMB)
@@ -148,6 +149,41 @@ int main()
 
 void reveal(int* board, int* board2, int i)
 {
+	board2[i] = REVEALED;
+
+	if (board[i] != EMPTY) {
+		board2[i] = SHOWN;
+		return;
+	}
+	
+	while (1) {
+		int j = i % 10;
+		i = i / 10;
+		
+		int k = (i-1 < 0) ? 0 : i-1;
+		int g = (j-1 < 0) ? 0 : j-1;
+		int ek = (i+2 > 10) ? 10 : i+2;
+		int eg = (j+2 > 10) ? 10 : j+2;
+
+		int sg = g;
+		//printf("%d %d, going %d %d to %d %d\n", i, j, k, g, ek, eg);
+		for (; k<ek; ++k) {
+			for (g=sg; g<eg; ++g) {
+				//printf("%d %d\n", k, g);
+				if (board[k*10+g] == EMPTY && board2[k*10+g] == HIDDEN)
+					board2[k*10+g] = REVEALED;
+			}
+		}
+		board2[i*10+j] = SHOWN;
+
+		for (i = 0; i<100; ++i) {
+			if (board2[i] == REVEALED)
+				break;
+		}
+		if (i == 100)
+			break;
+	}
+
 }
 
 int handle_events(struct nk_context* ctx)
