@@ -170,8 +170,13 @@ void reveal(int* board, int* board2, int i)
 		for (; k<ek; ++k) {
 			for (g=sg; g<eg; ++g) {
 				//printf("%d %d\n", k, g);
-				if (board[k*10+g] == EMPTY && board2[k*10+g] == HIDDEN)
-					board2[k*10+g] = REVEALED;
+				if (board2[k*10+g] == HIDDEN) {
+					if (board[k*10+g] == EMPTY) {
+						board2[k*10+g] = REVEALED;
+					} else if (board[k*10+g] != BOMB) {
+						board2[k*10+g] = SHOWN;
+					}
+				}
 			}
 		}
 		board2[i*10+j] = SHOWN;
