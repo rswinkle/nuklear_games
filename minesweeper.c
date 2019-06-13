@@ -24,7 +24,7 @@
 #define WINDOW_HEIGHT 400
 
 enum { BOMB = -1, EMPTY };
-enum { HIDDEN, SHOWN, REVEALED };
+enum { HIDDEN, SHOWN, REVEALED, MARKED };
 
 
 int handle_events(struct nk_context* ctx);
@@ -102,9 +102,10 @@ int main()
 	}
 
 	char* nums[] = { "0", "1", "2", "3", "4", "5", "6", "7", "8" };
-	struct nk_color hidden = {128,128,128, 255};
+	struct nk_color hidden_color = {128,128,128, 255};
 	struct nk_color red = {128,0,0, 255};
 
+	struct nk_rect bounds;
 
 	while (1) {
 		if (handle_events(ctx)) {
@@ -119,9 +120,18 @@ int main()
 			nk_layout_row_static(ctx, scr_w/12, scr_h/12, 10);
 			for (i = 0; i < 100; ++i) {
 
-				if (board2[i] == HIDDEN) {
-					if (nk_button_color(ctx, hidden)) {
-						reveal(board, board2, i);
+				bounds = nk_widget_bounds(ctx);
+				if (board2[i] != SHOWN) {
+    				if (nk_input_mouse_clicked(&ctx->input, NK_BUTTON_RIGHT, bounds)) {
+    					board2[i] = (board2[i] == HIDDEN) ? MARKED : HIDDEN;
+    				}
+
+					if (board2[i] == HIDDEN) {
+						if (nk_button_color(ctx, hidden_color)) {
+							reveal(board, board2, i);
+						}
+					} else {
+						nk_button_symbol(ctx, NK_SYMBOL_CIRCLE_SOLID);
 					}
 				} else {
 					if (board[i] != BOMB)
