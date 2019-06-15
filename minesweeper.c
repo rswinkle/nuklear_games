@@ -21,8 +21,8 @@
 #include <stdlib.h>
 #include <time.h>
 
-#define WINDOW_WIDTH 400
-#define WINDOW_HEIGHT 400
+#define WINDOW_WIDTH 500
+#define WINDOW_HEIGHT 500
 
 enum { BOMB = -1, EMPTY };
 enum { HIDDEN, SHOWN, REVEALED, MARKED };
@@ -66,7 +66,7 @@ int main()
 		return 1;
 	}
 
-	int gui_flags = 0;
+	int gui_flags = NK_WINDOW_NO_SCROLLBAR;
 
 	struct nk_color background = { 0, 0, 0, 255 };
 
@@ -110,17 +110,34 @@ int main()
 
 	struct nk_rect bounds;
 
+	//ctx->style.window.padding.x = 0;
+	//ctx->style.window.padding.y = 0;
+	struct nk_vec2 padding;
+	ctx->style.button.padding.x = 0;
+	ctx->style.button.padding.y = 0;
+	padding.x = ctx->style.button.border = 0;
+	padding.y = ctx->style.button.rounding = 0; // no rounded corners
+
+	padding.x = ctx->style.window.spacing.x;
+	padding.y = ctx->style.window.spacing.y;
+	padding.x = ctx->style.window.padding.x;
+	padding.y = ctx->style.window.padding.y;
+	//struct nk_vec2 padding = nk_panel_get_padding(&ctx->style, NK_PANEL_WINDOW);
+	//
+	float wp = ctx->style.window.padding.x;
+
 	while (1) {
 		if (handle_events(ctx)) {
 			break;
 		}
 
-		if (nk_begin(ctx, "Minesweeper", nk_rect(0, 0, WINDOW_WIDTH, WINDOW_HEIGHT),
+		if (nk_begin(ctx, "Minesweeper", nk_rect(0, 0, 2*wp+10*(40)+11*padding.x, WINDOW_HEIGHT),
 			gui_flags))
 		{
 			int i;
 
-			nk_layout_row_static(ctx, scr_w/12, scr_h/12, 10);
+			nk_layout_row_static(ctx, 40, 40, 10);
+			printf("padding = %.1f %.1f\n", padding.x, padding.y);
 			for (i = 0; i < 100; ++i) {
 
 				bounds = nk_widget_bounds(ctx);
