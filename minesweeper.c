@@ -164,6 +164,8 @@ int main()
 		nk_end(ctx);
 
 		nk_sdl_render(&background, SDL_TRUE);
+
+		SDL_Delay(50);  // save cpu/battery, this isn't a real time game
 	}
 
 
